@@ -1,0 +1,15 @@
+{% extends 'location/base.html'%}
+{% block content %}
+    <div style="margin: 2%;">
+        <h1>Locate Current Location </h1>
+    </div>
+    <div style="margin: 2%;">
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Run</button>
+        </form>
+    </div>
+    <div style="margin: 2%;">
+        <h4>{{ address }}</h4>
+    </div>
+{% endblock content %}
