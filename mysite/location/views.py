@@ -8,6 +8,7 @@ from .forms2 import CreateUserForm,  CustomerDetails, MechanicDetails
 # from .forms import SignupForm, LoginForm, CustomerDetails, MechanicDetails
 from .models import Customer, Mechanic
 from .decorators import *
+from django.views import generic
 
 
 # Create your views here.
@@ -33,8 +34,27 @@ def index(request):
         }
         return render(request, "location/index.html",context)
     return render(request, "location/index.html")
+location = utilities.current_address_by_api()
 def homepage(request):
     return render(request, "location/homepage.html")
+
+def mech_search(request):
+    customerset = Customer.objects.all()
+    mechanicset = Mechanic.objects.all()
+    location = utilities.current_address_by_api()
+    customer_gps = (location["latitude"], location["longitude"])
+    for i in mechanicset:
+        if i.city == location["city"]:
+             mechanic_gps = (i.latitude, i.logitude)
+             dist_cust_mech = utiilities.compare_distance(customer_gps, mechanic_gps)
+             context = {i.id : [i.businessName, i.businessId, i.contact, i.city, dist_cust_mech]}
+             return render(request, "location/results.html", context)
+        return render(request, "location/results.html")
+
+# class search_list(generic.ListView):
+#      customerset = Customer.objects.all()
+#      mechanicset = Mechanic.objects.all()
+
 def landing(request):
     return render(request, "location/landing.html")
 
@@ -116,8 +136,8 @@ def customer_view(request):
             fname = form.cleaned_data.get('first_name')
             lname = form.cleaned_data.get('last_name')
             reg = form.cleaned_data.get('registration')
-            loc = form.cleaned_data.get('location')
-            t = Customer(first_name=fname,last_name=lname,registration=reg, location=loc)
+            # loc = form.cleaned_data.get('location')
+            t = Customer(first_name=fname,last_name=lname,registration=reg)
             t.save()
         return HttpResponseRedirect("/%i" %t.id)
     else:
@@ -138,3 +158,8 @@ def mechanic_view(request):
     else:
         form  = MechanicDetails()
     return render(request, "location/mechanic.html", {"form":form})
+    # def get_mechanic(request):
+        # customerset = Customer.objects.all()
+        # mechanicset = Mechanic.objects.all()
+        # for i in customerset:
+        #     print(i)

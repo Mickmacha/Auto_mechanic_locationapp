@@ -39,13 +39,11 @@ def current_address_by_api():
         json_object = json.loads(response.text)
         latitude = json_object["latitude"]
         longitude = json_object["longitude"]
-        city = json_object["City"]
+        city = json_object["city"]
 
         return json_object
     except requests.ConnectionError as e:
         print(e)
 
-def compare_distance(loc1, loc2):
-    a=()
-    b=()
-    print(distance.distance(a,b).km)
+def compare_distance(a,b):
+    return distance.distance(a,b).km
