@@ -4,10 +4,12 @@
 {% endblock %}
 {% block content %}
 <form class="form-group" action="" method="POST">
+  <div>
+    <h3>Fill the details below </h3>
   {% csrf_token %}
 
   {{form.as_ul}}
-
-  <button type="submit" class="btn btn-success">Register</button>
+</div>
+  <button type="submit" class="btn btn-success"><a href="{% url 'mechsearch' %}">Next</a></button>
 </form>
 {% endblock  %}

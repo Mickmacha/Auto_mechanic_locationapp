@@ -3,10 +3,13 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import Group, User
 from . import utilities
-from .forms2 import CreateUserForm, CustomerDetails, MechanicDetails
+from .forms2 import CreateUserForm, CustomerDetails, MechanicDetails, ServiceDetails, MechanicUpdateStatusForm
 # from .forms import SignupForm, LoginForm, CustomerDetails, MechanicDetails
-from .models import Customer, Mechanic
+from .models import Customer, Mechanic, Service
 from .decorators import *
 from django.views import generic
 
@@ -28,41 +31,110 @@ def home(request):
     return render(request, "location/home.html")
 
 
-def index(request):
-    if request.method == "POST":
-        latitude = request.POST.get('latitude')
-        longitude = request.POST.get('longitude')
-        context = {
-            'address': utilities.address_by_location(latitude, longitude)
-        }
-        return render(request, "location/index.html", context)
-    return render(request, "location/index.html")
+
+# redirect users to the mechanic profile
+@allowed_users(allowed_roles=['mechanic', 'customer'])
+def index(request, id=None):
+    # if request.method == "POST":
+    #     latitude = request.POST.get('latitude')
+    #     longitude = request.POST.get('longitude')
+    #     context = {
+    #         'address': utilities.address_by_location(latitude, longitude)
+    #     }
+    #     return render(request, "location/index.html", context)
+    mechanicset = Mechanic.objects.all().filter(id=id)
+    print(mechanicset)
+    return render(request, "location/profile.html")
 
 
 location = utilities.current_address_by_api()
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 
 def homepage(request):
     return render(request, "location/homepage.html")
 
 
-def mech_search(request):
+@csrf_exempt
+def mechsearch(request):
+    msg = None
+
     customerset = Customer.objects.all()
     mechanicset = Mechanic.objects.all()
     location = utilities.current_address_by_api()
     customer_gps = (location["latitude"], location["longitude"])
-    for i in mechanicset:
-        if i.city == location["city"]:
-            mechanic_gps = (i.latitude, i.logitude)
-            dist_cust_mech = utiilities.compare_distance(customer_gps, mechanic_gps)
-            context = {i.id: [i.businessName, i.businessId, i.contact, i.city, dist_cust_mech]}
-            return render(request, "location/results.html", context)
-        return render(request, "location/results.html")
+    print(customer_gps)
+    try:
+        for i in mechanicset:
+            if i.city == location["city"]:
+                print(i.city)
+                mechanic_gps = (i.latitude, i.longitude)
+                dist_cust_mech = utilities.compare_distance(customer_gps, mechanic_gps)
+                context ={}
+                context.setdefault("resultset")
+                result = [i.id, i.businessName, i.businessId, i.contact, i.city]
+                context["resultset"].append(result)
+                distance = {"distance" : dist_cust_mech}
+                print(context["resultset"])
+                return render(request, "location/results.html", context)
+            else:
+                msg = {"msg": "No one is available"}
+                context = {}
+    except ValueError as v:
+        print(v)
+    return render(request, "location/results.html", {"context": context, "msg": msg})
 
 
-# class search_list(generic.ListView):
-#      customerset = Customer.objects.all()
-#      mechanicset = Mechanic.objects.all()
+# checking assigned work for mechanic
+@allowed_users(allowed_roles=['mechanic'])
+def mechanic_work_assigned_view(request):
+    mechanic = Mechanic.objects.get(user_id=request.user.id)
+    works = Service.objects.all().filter(mechanic_id=mechanic.id)
+    return render(request, 'location/mechanic_service_view.html'  ,{'works':works,'mechanic':mechanic})
+
+
+# change status and cost of the current service on user
+@allowed_users(allowed_roles=['mechanic'])
+def mechanic_update_service_view(request, pk):
+    mechanic = Mechanic.objects.get(user_id=request.user.id)
+    updateStatus = MechanicUpdateStatusForm()
+    if request.method == 'POST':
+        updateStatus = MechanicUpdateStatusForm(request.POST)
+        if updateStatus.is_valid():
+            enquiry_x = Service.objects.get(id=pk)
+            enquiry_x.status = updateStatus.cleaned_data['status']
+            enquiry_x.cost = updateStatus.cleaned_data['cost']
+            enquiry_x.save()
+        else:
+            print("form is invalid")
+        return HttpResponseRedirect('')
+    return render(request, '', {'updateStatus': updateStatus, 'mechanic': mechanic})
+
+
+# user viewing service status
+@allowed_users(allowed_roles=['customer'])
+def user_service_view(request, pk):
+    customer = Customer.objects.all().filter(id=pk)
+    serviceset = Service.objects.all().filter(customer=id)
+    context = {"customer": customer, "services": serviceset}
+    return render(request, 'location/users_service.html', context)
+
+
+# def mech_service(request, id=None):
+#     mechanicset = Mechanic.objects.all().filter(id=id)
+#     serviceset = Service.objects.all().filter(mechanic=id)
+#     services = serviceset
+#     if request.Method == "POST":
+#         form = ServiceDetails(request.Post)
+
 
 def landing(request):
     return render(request, "location/landing.html")
@@ -135,7 +207,7 @@ def login_view(request):
 
         if user is not None:
             # login(request, username, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('home')
+            return redirect('homepage')
         else:
             messages.info(username, "error while validating form data")
             return render(request, 'location/login.html', context)
@@ -158,6 +230,9 @@ def customer_view(request):
             # loc = form.cleaned_data.get('location')
             t = Customer(first_name=fname, last_name=lname, registration=reg)
             t.save()
+            user = t.save()
+            group = Group.objects.get(name='customer')
+            user.groups.add(group)
         return HttpResponseRedirect("/%i" % t.id)
     else:
         form = CustomerDetails()
@@ -173,13 +248,14 @@ def mechanic_view(request):
             contact = form.cleaned_data.get("contact")
             location = utilities.current_address_by_api()
 
-            t2 = Mechanic(businessId=bid, businessName=bname, contact=contact, city=location["City"],
+            t2 = Mechanic(businessId=bid, businessName=bname, contact=contact, city=location["city"],
                           latitude=location["latitude"], longitude=location["longitude"])
             t2.save()
         return HttpResponseRedirect("/%i" % t2.id)
     else:
         form = MechanicDetails()
-    return render(request, "location/mechanic.html", {"form": form})
+        return render(request, "location/mechanic.html", {"form": form})
+
     # def get_mechanic(request):
     # customerset = Customer.objects.all()
     # mechanicset = Mechanic.objects.all()

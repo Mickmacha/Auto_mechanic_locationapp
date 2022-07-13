@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'location.apps.LocationConfig',
+
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -138,4 +139,4 @@ STATICFILE_DIRS = [(os.path.join(BASE_DIR, "static"))]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
-# AUTH_USER_MODEL = "location.User"
+# AUTH_USER_MODEL = "location.User" commented since we've not overriden user model
