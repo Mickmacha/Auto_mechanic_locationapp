@@ -5,16 +5,18 @@
     <div class="row text-center">
         <h1>Here are you're search results</h1>
     </div>
-
+    {% for i in resultset %}
     <div class="card" style="width: 18rem;">
     <img src="..." class="card-img-top" alt="...">
         <div class="card-body">
-        <p class="card-text">  </p>
+        <p class="card-text"> {{ i }} </p>
             {% csrf_token %}
-            <form method="post" action="">
-         <button class = "btn btn-success" type="submit" name="enquire" value="">Request Service</button>
-                </form>
+            <form method="post" action="{% url 'index' %}">
+<!--         <a href="{% url 'index' %}">-->
+             <button class = "btn btn-success" type="submit" name="enquire" value="{{ i.0 }}">Request Service</button>
+         </form>
     </div>
     </div>
 </div>
+{% endfor %}
 {% endblock %}

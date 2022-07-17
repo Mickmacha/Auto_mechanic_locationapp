@@ -1,13 +1,17 @@
 {% extends 'location/base.html' %}
+{% load crispy_forms_tags %}
 {% block title %}
 Mechanic details
 {% endblock %}
 {% block content %}
-<form class="form-group" action="" method="POST">
+<br><br><br><br><br>
+<form class="form-group" action="" style="margin-left:200px;margin-right:200px;" method="POST">
+  <div>
+    <h3 style="text-align:center;">Fill the details below </h3>
   {% csrf_token %}
 
-  {{form.as_ul}}
-
-  <button type="submit" class="btn btn-success"><a href="{% url 'homepage' %}">Register</a></button></a>
+  {{form.as_p}}
+  </div>
+  <button type="submit" class="btn btn-success"><a href="{% url 'mechanic_work_assigned' %}">Register</a></button></a>
 </form>
 {% endblock  %}

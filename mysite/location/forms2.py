@@ -5,6 +5,7 @@ from django import forms
 from .models import ReviewRating
 
 
+
 class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
@@ -31,7 +32,7 @@ class ServiceDetails(forms.Form):
     problem_description = forms.CharField(label="Describe your car issues", max_length=500)
 
 
-class ReviewForms(forms.Form):
+class ReviewForms(forms.ModelForm):
     class Meta:
         model = ReviewRating
         fields = ['subject', 'review', 'rating']
