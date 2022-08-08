@@ -287,14 +287,13 @@ def mechanic_view(request):
             contact = form.cleaned_data.get("contact")
             location = utilities.current_address_by_api()
             print(location)
-            t2 = Mechanic(businessId=bid, businessName=bname, contact=contact, city=location["city"],
+            user1 = User.objects.get(id=request.user.id)
+            t2 = Mechanic(user=user1, businessId=bid, businessName=bname, contact=contact, city=location["city"],
                           latitude=location["latitude"], longitude=location["longitude"])
             t2.save()
-            user = t2.save()
             print(request.user.id)
-            # group = Group.objects.get(name='mechanic')
-            print(request.user)
-            # user.groups.add(group)
+            group = Group.objects.get(name='mechanic')
+            user1.groups.add(group)
         return HttpResponseRedirect("/mechanic_work_assigned")
     else:
         form = MechanicDetails()
@@ -315,7 +314,7 @@ def service_details(request):
             vehicle_model = serviceForm.cleaned_data["vehicle_model"]
             problem_description = serviceForm.cleaned_data["problem_description"]
             print(request.user.id)
-            customer = Customer.objects.get(id=request.user.id)
+            customer = Customer.objects.get(user=request.user.id)
             enquiry = Service(customer=customer,vehicle_model=vehicle_model, vehicle_brand=vehicle_brand, problem_description=problem_description)
             enquiry.save()
             # enquiry_x.save()
