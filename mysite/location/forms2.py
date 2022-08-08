@@ -2,7 +2,7 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import ReviewRating
+from .models import ReviewRating, Customer
 
 
 
@@ -11,13 +11,18 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+class CustomerDetails(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ["first_name", "last_name", "registration"]
 
-class CustomerDetails(forms.Form):
-    first_name = forms.CharField(label="Firstname", max_length=50)
-    last_name = forms.CharField(label="Lastname", max_length=50)
-    registration = forms.CharField(label="Registration Number", max_length=50)
-    # location = forms.CharField(label = "Location", max_length=100, required=False)
-    check = forms.BooleanField(required=False)
+
+# class CustomerDetails(forms.Form):
+#     first_name = forms.CharField(label="Firstname", max_length=50)
+#     last_name = forms.CharField(label="Lastname", max_length=50)
+#     registration = forms.CharField(label="Registration Number", max_length=50)
+#     # location = forms.CharField(label = "Location", max_length=100, required=False)
+#     check = forms.BooleanField(required=False)
 
 
 class MechanicDetails(forms.Form):

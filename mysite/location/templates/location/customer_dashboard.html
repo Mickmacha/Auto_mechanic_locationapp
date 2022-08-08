@@ -44,6 +44,11 @@
 				</div>
 			</div>
 		</div><br><br><br><br>
+		 <form method="post" action="{% url 'fill_review_view' %}">
+                {% csrf_token %}
+<!--         <a href="{% url 'index' %}">-->
+             <button class = "btn btn-success" type="submit" name="rate" value="">Rate Mechanic</button>
+         </form>
 
       <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <!-- ****** cards end ********** -->

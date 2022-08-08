@@ -1,0 +1,56 @@
+{% extends 'location/base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<head>
+  <style media="screen">
+    input[type=text], select,input[type=number] , textarea{
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  input[type=submit]:hover {
+    background-color: #45a049;
+  }
+
+
+  </style>
+
+
+</head>
+
+<br><br><br><br><br>
+<h3 style="text-align:center;">Could you describe issues facing your car?</h3>
+<div>
+  <form method="post" style="margin-left:200px;margin-right:200px;" action="">
+      {% csrf_token %}
+
+    <label for="salary" >What is your car brand?</label>
+    {% render_field serviceForm.vehicle_brand class="form-control" placeholder=field.label  %}
+    <label for="salary"> Describe your car model</label>
+    {% render_field serviceForm.vehicle_model class="form-control"  %}
+    <label for="salary">Describe the issue your car is facing</label>
+    {% render_field serviceForm.problem_description class="form-control"  %}
+    <a href="{% url 'mechsearch' %}"><input type="submit" value="Next"></a>
+  </form>
+</div>
+
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{% endblock content %}

@@ -35,11 +35,11 @@
 </head>
 
 <br><br><br><br><br>
-<h3 style="text-align:center;">Rate Mechanic service</h3>
+
 <div>
-  <form method="post" style="margin-left:200px;margin-right:200px;" action="">
+  <form method="post" action="{% url 'fill_review_view' %}" style="margin-left:200px;margin-right:200px;" action="">
       {% csrf_token %}
-  <h3 style="text-align:center;">Rate Mechanic service</h3>
+  <h3 style="text-align:center;">Rate this Auto shop service</h3>
     <div>
 <!--      rating stars-->
       <label> How do you rate this auto shop?</label>
@@ -62,8 +62,12 @@
       Review:
       <textarea name="review" rows = "4" class="form-control"></textarea>
       <br>
+
        <input type="submit" value="Submit Review" class="btn btn-primary">
-      <br>
+
+        <p> You must be logged in to post a review.<span> <a href="{% url 'login_view' %}">Login</a></span></p>
+        <br>
+
     </div>
 
     </div>

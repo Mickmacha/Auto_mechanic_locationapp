@@ -53,7 +53,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +135,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '/')
 STATICFILE_DIRS = [(os.path.join(BASE_DIR, "static"))]
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+# SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

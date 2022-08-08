@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 #     is_customer = models.BooleanField('Is customer', default=False)
 #     is_mechanic = models.BooleanField('Is mechanic', default=False)
 class Mechanic(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     businessName = models.CharField(max_length=100)
     businessId = models.CharField(max_length=100)
     # location = models.CharField(max_length=100)
@@ -20,7 +20,7 @@ class Mechanic(models.Model):
 
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     registration = models.CharField(max_length=200)
