@@ -4,13 +4,16 @@
 
     <div class="row text-center">
         <h1>Here are you're search results</h1>
+        <button class="btn btn-primary btn-sm" onClick="window.location.reload();">Refresh Search</buttonclass>
     </div>
     {% for i in resultset %}
     <div class="card" style="width: 18rem;">
     <img src="..." class="card-img-top" alt="...">
         <div class="card-body">
-        <p class="card-text"> {{ i }} </p>
-
+        <p class="card-text"> {{ i.0 }} </p>
+            <p class="card-text"> {{ i.1 }} </p>
+            <p class="card-text"> Town: {{ i.4 }} </p>
+            <p class="card-text"> Distance(km): {{ i.5 }} </p>
             <form method="post" action="{% url 'user_service_view' %}">
                 {% csrf_token %}
 <!--         <a href="{% url 'index' %}">-->

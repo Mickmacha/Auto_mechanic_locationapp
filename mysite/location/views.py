@@ -14,7 +14,7 @@ from .decorators import *
 from django.db.models import Q
 import random
 from django.db.models import Sum
-
+from django.db import IntegrityError
 from django.views import generic
 
 # Create your views here.
@@ -78,7 +78,7 @@ def mechsearch(request):
         customer_gps = (location["latitude"], location["longitude"])
         location["city"] = "Nairobi"
         for i in mechanicset:
-            if i.city == location["city"]:
+            if location is not None:
                 mechanic_gps = (i.latitude, i.longitude)
                 print(i.city)
                 print(location["city"])
@@ -172,8 +172,10 @@ def fill_review_view(request):
 def user_service_view(request):
     if request.method == "POST":
         id = request.POST.get("enquire")
-        enquiry_x = Service.objects.get(customer=request.user.id)
-        mechanic = Mechanic.objects.get(id=id)
+        print(request.user.id)
+        customer = Customer.objects.get(user=request.user.id)
+        mechanic = Mechanic.objects.get(user=id)
+        enquiry_x = Service.objects.get(customer=customer)
         enquiry_x.mechanic = mechanic
         enquiry_x.save()
     customer = Customer.objects.all().filter(user_id=request.user.id)
@@ -261,11 +263,15 @@ def customer_view(request):
             # loc = form.cleaned_data.get('location')
             t = Customer(user=user1, first_name=fname, last_name=lname, registration=reg)
             print("reg:", reg)
-            print(request.user.id)
-            t.save()
-            user = t.save()
-            group = Group.objects.get(name='customer')
-            user.groups.add(group)
+
+            try:
+                group = Group.objects.get(name='customer')
+                user1.groups.add(group)
+                t.save()
+            except IntegrityError as e:
+                if 'unique constraint' in e.args:
+                    print("already present")
+
         return HttpResponseRedirect("/service_details")
     else:
         form = CustomerDetails()
@@ -309,8 +315,8 @@ def service_details(request):
             vehicle_model = serviceForm.cleaned_data["vehicle_model"]
             problem_description = serviceForm.cleaned_data["problem_description"]
             print(request.user.id)
-            # customer = Customer.objects.get(id=request.user.id)
-            enquiry = Service(vehicle_model=vehicle_model, vehicle_brand=vehicle_brand, problem_description=problem_description)
+            customer = Customer.objects.get(id=request.user.id)
+            enquiry = Service(customer=customer,vehicle_model=vehicle_model, vehicle_brand=vehicle_brand, problem_description=problem_description)
             enquiry.save()
             # enquiry_x.save()
         else:
