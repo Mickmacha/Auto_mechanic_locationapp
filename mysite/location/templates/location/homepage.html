@@ -1,18 +1,35 @@
 {% extends 'location/base.html'%}
+{% load static %}
+{% load groupfilter %}
 {% block content %}
-<div class="container-fluid ">
-  <div class="row text-center">
-    <h1>Do you want to get your car fixed?</h1>
-    <h2>Need a repair? Just contact us.
-      <b>click here!</b></h2>
-        <button class="btn btn-success btn-lg btn-radius " ><a href="{% url 'customer_view' %}">Then click here</a></button>
 
-    </div>
-    <div class="row text-center">
-    <h1>Are you a mechanic looking to register here?</h1>
-    <h2>Need new customers? Just join us.
+<div class="container-fluid" >
+  <div class="row align-items-center justify-content-center">
+    <h1 style="font-size:28px;">Do you want to get your car fixed?</h1>
+    <h2 style="font-size:24px;">Need a repair? Just contact us.
       <b>click here!</b></h2>
-        <button class="btn btn-success btn-lg btn-radius " ><a href="{% url 'mechanic_view' %}">Then click here</a></button>
-
     </div>
+    <div class="row align-items-center justify-content-center">
+        <button class="btn btn-success btn-lg btn-radius" style="text-decoration:none;"><a href="{% url 'customer_view' %}">Then click here</a></button>
+    </div>
+    <div class="row align-items-center justify-content-center" style="max-width: 500px;margin:0 auto 3rem;">
+    <h1 style="font-size:28px;font-weigt:300;">Are you a mechanic looking to register here?</h1>
+<!--    <h2 style="font-size:24px;">Need new customers? Just join us.-->
+<!--      <b>click here!</b></h2></div>-->
+       <div class="row align-items-center justify-content-center">
+        <button class="btn btn-success btn-lg btn-radius" style=""><a href="{% url 'mechanic_view' %}">Then click here</a></button>
+    </div>
+    <div class="row align-items-center justify-content-center">
+    <h1 style="font-size:28px;">Already a Customer.View Service page</h1>
+    </div>
+       <div class="row align-items-center justify-content-center">
+        <button class="btn btn-success btn-small btn-radius" style=""><a href="{% url 'user_service_view' %}">click here</a></button>
+    </div>
+    <div class="row align-items-center justify-content-center">
+    <h1 style="font-size:28px;">Already a user. View Mechanic service page.</h1>
+       <div class="row align-items-center justify-content-center">
+        <button class="btn btn-success btn-lg btn-radius" style=""><a href="{% url 'mechanic_work_assigned' %}">click here</a></button>
+    </div>
+</div>
+
 {% endblock %}

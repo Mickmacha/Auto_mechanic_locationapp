@@ -12,6 +12,7 @@ from .forms2 import CreateUserForm, CustomerDetails, MechanicDetails, ServiceDet
 from .models import Customer, Mechanic, Service, ReviewRating
 from .decorators import *
 from django.db.models import Q
+import math
 import random
 from django.db.models import Sum
 from django.db import IntegrityError
@@ -83,6 +84,7 @@ def mechsearch(request):
                 print(i.city)
                 print(location["city"])
                 dist_cust_mech = utilities.compare_distance(customer_gps, mechanic_gps)
+                dist_cust_mech = float("{0:.3f}".format(dist_cust_mech))
                 # context ={"resultset": [i.id, i.businessName, i.businessId, i.contact, i.city]}
                 context = {}
                 context.setdefault("resultset", [])
@@ -104,8 +106,10 @@ def mechsearch(request):
 @login_required(login_url="login_view")
 # @allowed_users(allowed_roles=['mechanic'])
 def mechanic_work_assigned(request):
-    mechanic = Mechanic.objects.all().filter(id=request.user.id)
-    works = Service.objects.all().filter(mechanic=request.user.id)
+    user = User.objects.get(id = request.user.id)
+    mechanic = Mechanic.objects.get(user=user)
+    works = Service.objects.all().filter(mechanic=mechanic)
+    print(works)
     return render(request, 'location/mechanic_service_view.html', {'works': works, 'mechanic': mechanic})
 
 @login_required(login_url="login_view")
@@ -171,10 +175,11 @@ def fill_review_view(request):
 # @allowed_users(allowed_roles=['customer'])
 def user_service_view(request):
     if request.method == "POST":
-        id = request.POST.get("enquire")
+        bid = request.POST.get("enquire")
         print(request.user.id)
+        print(id)
         customer = Customer.objects.get(user=request.user.id)
-        mechanic = Mechanic.objects.get(user=id)
+        mechanic = Mechanic.objects.get(businessId=bid)
         enquiry_x = Service.objects.get(customer=customer)
         enquiry_x.mechanic = mechanic
         enquiry_x.save()
